@@ -1,14 +1,15 @@
 import { AppModule } from '@/infra/app.module';
-import { PrismaService } from '@/infra/database/prisma/prisma.service';
+import { DatabaseModule } from '@/infra/database/database.module';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AdminFactory } from 'test/factories/make-admin';
-import { DatabaseModule } from '@/infra/database/database.module';
+import { DeliveryManFactory } from 'test/factories/make-deliveryman';
 import request from 'supertest';
-import generateCPF from 'test/utils/generate-CPF';
 import { authenticateAdmin } from 'test/utils/auth-admin';
+import generateCPF from 'test/utils/generate-CPF';
+import { PrismaService } from '@/infra/database/prisma/prisma.service';
 
-describe('Create Admin (E2E)', () => {
+describe('Delete Deliveryman (E2E)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let adminFactory: AdminFactory;
@@ -16,7 +17,7 @@ describe('Create Admin (E2E)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [AdminFactory],
+      providers: [AdminFactory, DeliveryManFactory],
     }).compile();
 
     app = moduleRef.createNestApplication();
@@ -27,13 +28,13 @@ describe('Create Admin (E2E)', () => {
     await app.init();
   });
 
-  test('[POST] /admin', async () => {
+  test('[DELETE] /deliveryman/:cpf', async () => {
     const { token } = await authenticateAdmin(app, adminFactory);
 
     const johnDoeCPF = generateCPF();
 
-    const response = await request(app.getHttpServer())
-      .post('/admin')
+    await request(app.getHttpServer())
+      .post('/deliveryman')
       .set('Authorization', `Bearer ${token}`)
       .send({
         name: 'John Doe',
@@ -41,15 +42,16 @@ describe('Create Admin (E2E)', () => {
         password: '123456',
       });
 
-    expect(response.statusCode).toBe(201);
-
-    const userOnDatabase = await prisma.user.findUnique({
+    const deliveryman = await prisma.user.findUnique({
       where: {
         cpf: johnDoeCPF,
       },
     });
 
-    expect(userOnDatabase).toBeTruthy();
-    expect(userOnDatabase?.role).toBe('ADMIN');
+    const response = await request(app.getHttpServer())
+      .delete(`/deliveryman/${deliveryman?.cpf}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.statusCode).toBe(204);
   });
 });

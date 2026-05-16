@@ -13,12 +13,20 @@ export class DeliveryMan extends Entity<DeliveryManProps> {
     return this.props.name;
   }
 
+  set name(name: string) {
+    this.props.name = name;
+  }
+
   get cpf() {
     return this.props.cpf;
   }
 
   get password() {
     return this.props.password;
+  }
+
+  set password(password: string) {
+    this.props.password = password;
   }
 
   get role() {

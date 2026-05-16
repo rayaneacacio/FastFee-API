@@ -30,4 +30,12 @@ export class PrismaAdminRepository implements AdminRepository {
 
     return PrismaAdminMapper.toDomain(admin);
   }
+
+  async delete(cpf: string): Promise<void> {
+    await this.prisma.user.delete({
+      where: {
+        cpf,
+      },
+    });
+  }
 }

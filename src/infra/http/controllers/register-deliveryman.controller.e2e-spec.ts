@@ -2,51 +2,42 @@ import { AppModule } from '@/infra/app.module';
 import { PrismaService } from '@/infra/database/prisma/prisma.service';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { hash } from 'bcryptjs';
 import { DatabaseModule } from '@/infra/database/database.module';
 import request from 'supertest';
-import { DeliveryManFactory } from 'test/factories/make-deliveryman';
+import { AdminFactory } from 'test/factories/make-admin';
+import generateCPF from 'test/utils/generate-CPF';
+import { authenticateAdmin } from 'test/utils/auth-admin';
 
 describe('Create DeliveryMan (E2E)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let deliveryman: DeliveryManFactory;
+  let adminFactory: AdminFactory;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [DeliveryManFactory],
+      providers: [AdminFactory],
     }).compile();
 
     app = moduleRef.createNestApplication();
 
     prisma = moduleRef.get(PrismaService);
-    deliveryman = moduleRef.get(DeliveryManFactory);
+    adminFactory = moduleRef.get(AdminFactory);
 
     await app.init();
   });
 
   test('[POST] /deliveryman', async () => {
-    await deliveryman.makePrismaDeliveryMan({
-      cpf: '99999999999',
-      password: await hash('123456', 8),
-    });
+    const { token } = await authenticateAdmin(app, adminFactory);
 
-    const authResponse = await request(app.getHttpServer())
-      .post('/sessions')
-      .send({
-        cpf: '99999999999',
-        password: '123456',
-      });
-
-    const token = authResponse.body.access_token;
+    const johnDoeCPF = generateCPF();
 
     const response = await request(app.getHttpServer())
       .post('/deliveryman')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        name: 'John Doe 2',
-        cpf: '88888888888',
+        name: 'John Doe',
+        cpf: johnDoeCPF,
         password: '123456',
       });
 
@@ -54,7 +45,7 @@ describe('Create DeliveryMan (E2E)', () => {
 
     const userOnDatabase = await prisma.user.findUnique({
       where: {
-        cpf: '88888888888',
+        cpf: johnDoeCPF,
       },
     });
 

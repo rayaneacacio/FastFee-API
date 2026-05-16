@@ -18,4 +18,8 @@ export class InMemoryAdminRepository implements AdminRepository {
 
     DomainEvents.dispatchEventsForAggregate(admin.id);
   }
+
+  async delete(cpf: string) {
+    this.items = this.items.filter((item) => item.cpf !== cpf);
+  }
 }

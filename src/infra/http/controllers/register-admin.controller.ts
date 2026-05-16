@@ -12,10 +12,14 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe';
 import { Roles } from '@/infra/auth/roles.decorator';
 import { AdminAlreadyExistsError } from '@/domain/application/use-cases/errors/admin-already-exists';
 import { RegisterAdminUseCase } from '@/domain/application/use-cases/register-admin';
+import isValidCPF from '@/utils/is-valid-CPF';
 
 const registerAdminBodySchema = z.object({
   name: z.string(),
-  cpf: z.string(),
+  cpf: z.string().refine(isValidCPF, {
+    message: 'CPF inválido',
+  }),
+
   password: z.string(),
 });
 

@@ -8,6 +8,7 @@ import {
   DeliveryManProps,
 } from '@/domain/enterprise/entitites/deliveryman';
 import { PrismaDeliveryManMapper } from '@/infra/database/prisma/mappers/delivery-man-mapper';
+import generateCPF from 'test/utils/generate-CPF';
 
 export function makeDeliveryMan(
   override: Partial<DeliveryManProps> = {},
@@ -16,7 +17,7 @@ export function makeDeliveryMan(
   const deliveryMan = DeliveryMan.create(
     {
       name: faker.person.fullName(),
-      cpf: faker.internet.displayName(),
+      cpf: generateCPF(),
       password: faker.internet.password(),
       role: 'DELIVERYMAN',
       ...override,

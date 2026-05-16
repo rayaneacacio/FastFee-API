@@ -18,4 +18,16 @@ export class InMemoryDeliveryManRepository implements DeliveryManRepository {
 
     DomainEvents.dispatchEventsForAggregate(deliveryMan.id);
   }
+
+  async delete(cpf: string) {
+    this.items = this.items.filter((item) => item.cpf !== cpf);
+  }
+
+  async save(deliveryMan: DeliveryMan): Promise<void> {
+    const itemIndex = this.items.findIndex(
+      (item) => item.id === deliveryMan.id,
+    );
+
+    if (itemIndex >= 0) this.items[itemIndex] = deliveryMan;
+  }
 }

@@ -30,4 +30,23 @@ export class PrismaDeliveryManRepository implements DeliveryManRepository {
 
     return PrismaDeliveryManMapper.toDomain(deliveryMan);
   }
+
+  async delete(cpf: string): Promise<void> {
+    await this.prisma.user.delete({
+      where: {
+        cpf,
+      },
+    });
+  }
+
+  async save(deliveryMan: DeliveryMan): Promise<void> {
+    const data = PrismaDeliveryManMapper.toPrisma(deliveryMan);
+
+    await this.prisma.user.update({
+      where: {
+        id: data.id,
+      },
+      data,
+    });
+  }
 }

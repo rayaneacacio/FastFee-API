@@ -3,6 +3,7 @@ import { makeAdmin } from 'test/factories/make-admin';
 import { InMemoryAdminRepository } from 'test/repositories/in-memory-admin-repository';
 import { RegisterAdminUseCase } from './register-admin';
 import { AdminAlreadyExistsError } from './errors/admin-already-exists';
+import generateCPF from 'test/utils/generate-CPF';
 
 let inMemoryAdminRepository: InMemoryAdminRepository;
 let fakeHasher: FakeHasher;
@@ -18,9 +19,11 @@ describe('Register Admin', () => {
   });
 
   it('should be able to register admin', async () => {
+    const cpf = generateCPF();
+
     const result = await sut.execute({
       name: 'John Doe',
-      cpf: '99999999999',
+      cpf,
       password: '123456',
     });
 
@@ -30,14 +33,14 @@ describe('Register Admin', () => {
 
     expect(inMemoryAdminRepository.items[0]).toMatchObject({
       name: 'John Doe',
-      cpf: '99999999999',
+      cpf,
     });
   });
 
   it('should hash admin password on register', async () => {
     await sut.execute({
       name: 'John Doe',
-      cpf: '99999999999',
+      cpf: generateCPF(),
       password: '123456',
     });
 
@@ -47,15 +50,17 @@ describe('Register Admin', () => {
   });
 
   it('should not be able to register admin with same cpf', async () => {
+    const cpf = generateCPF();
+
     const admin = makeAdmin({
-      cpf: '99999999999',
+      cpf,
     });
 
-    inMemoryAdminRepository.items.push(admin);
+    await inMemoryAdminRepository.create(admin);
 
     const result = await sut.execute({
       name: 'John Doe',
-      cpf: '99999999999',
+      cpf,
       password: '123456',
     });
 

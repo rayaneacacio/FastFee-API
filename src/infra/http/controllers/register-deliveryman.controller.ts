@@ -12,10 +12,14 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe';
 import { RegisterDeliveryManUseCase } from '@/domain/application/use-cases/register-deliveryman';
 import { DeliveryManAlreadyExistsError } from '@/domain/application/use-cases/errors/delivery-man-already-exists';
 import { Roles } from '@/infra/auth/roles.decorator';
+import isValidCPF from '@/utils/is-valid-CPF';
 
 const registerDeliveryManBodySchema = z.object({
   name: z.string(),
-  cpf: z.string(),
+  cpf: z.string().refine(isValidCPF, {
+    message: 'CPF inválido',
+  }),
+
   password: z.string(),
 });
 

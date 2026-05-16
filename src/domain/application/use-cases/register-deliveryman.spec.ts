@@ -3,6 +3,7 @@ import { makeDeliveryMan } from 'test/factories/make-deliveryman';
 import { InMemoryDeliveryManRepository } from 'test/repositories/in-memory-deliveryman-repository';
 import { RegisterDeliveryManUseCase } from './register-deliveryman';
 import { DeliveryManAlreadyExistsError } from './errors/delivery-man-already-exists';
+import generateCPF from 'test/utils/generate-CPF';
 
 let inMemoryDeliveryManRepository: InMemoryDeliveryManRepository;
 let fakeHasher: FakeHasher;
@@ -22,9 +23,11 @@ describe('Register DeliveryMan', () => {
   });
 
   it('should be able to register deliveryman', async () => {
+    const cpf = generateCPF();
+
     const result = await sut.execute({
       name: 'John Delivery',
-      cpf: '99999999999',
+      cpf,
       password: '123456',
     });
 
@@ -34,14 +37,14 @@ describe('Register DeliveryMan', () => {
 
     expect(inMemoryDeliveryManRepository.items[0]).toMatchObject({
       name: 'John Delivery',
-      cpf: '99999999999',
+      cpf,
     });
   });
 
   it('should hash deliveryman password on register', async () => {
     await sut.execute({
       name: 'John Delivery',
-      cpf: '99999999999',
+      cpf: generateCPF(),
       password: '123456',
     });
 
@@ -51,15 +54,17 @@ describe('Register DeliveryMan', () => {
   });
 
   it('should not be able to register deliveryman with same cpf', async () => {
-    const deliveryMan = makeDeliveryMan({
-      cpf: '99999999999',
+    const cpf = generateCPF();
+
+    const deliveryman = makeDeliveryMan({
+      cpf,
     });
 
-    inMemoryDeliveryManRepository.items.push(deliveryMan);
+    await inMemoryDeliveryManRepository.create(deliveryman);
 
     const result = await sut.execute({
       name: 'John Delivery',
-      cpf: '99999999999',
+      cpf,
       password: '123456',
     });
 

@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infra/database/prisma/prisma.service';
 import { Admin, AdminProps } from '@/domain/enterprise/entitites/admin';
 import { PrismaAdminMapper } from '@/infra/database/prisma/mappers/admin-mapper';
+import generateCPF from 'test/utils/generate-CPF';
 
 export function makeAdmin(
   override: Partial<AdminProps> = {},
@@ -13,7 +14,7 @@ export function makeAdmin(
   const admin = Admin.create(
     {
       name: faker.person.fullName(),
-      cpf: faker.internet.displayName(),
+      cpf: generateCPF(),
       password: faker.internet.password(),
       role: 'ADMIN',
       ...override,

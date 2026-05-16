@@ -30,14 +30,13 @@ describe('Authenticate', () => {
 
   it('should be able to authenticate admin', async () => {
     const admin = makeAdmin({
-      cpf: '99999999999',
       password: await fakeHasher.hash('123456'),
     });
 
-    inMemoryAdminRepository.items.push(admin);
+    await inMemoryAdminRepository.create(admin);
 
     const result = await sut.execute({
-      cpf: '99999999999',
+      cpf: admin.cpf,
       password: '123456',
     });
 
@@ -58,14 +57,13 @@ describe('Authenticate', () => {
 
   it('should be able to authenticate deliveryman', async () => {
     const deliveryMan = makeDeliveryMan({
-      cpf: '99999999999',
       password: await fakeHasher.hash('123456'),
     });
 
     inMemoryDeliveryManRepository.items.push(deliveryMan);
 
     const result = await sut.execute({
-      cpf: '99999999999',
+      cpf: deliveryMan.cpf,
       password: '123456',
     });
 
