@@ -36,7 +36,7 @@ describe('Fetch Admin (E2E)', () => {
 
     expect(response.body.admin).toEqual(
       expect.objectContaining({
-        props: expect.objectContaining({ cpf }),
+        cpf,
       }),
     );
   });

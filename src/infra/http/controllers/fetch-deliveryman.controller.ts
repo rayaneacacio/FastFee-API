@@ -8,7 +8,8 @@ import {
 } from '@nestjs/common';
 import { Roles } from '@/infra/auth/roles.decorator';
 import { FetchDeliverymanUseCase } from '@/domain/application/use-cases/fetch-deliveryman';
-import { DeliveryManAlreadyExistsError } from '@/domain/application/use-cases/errors/delivery-man-already-exists';
+import { DeliverymanNotFoundError } from '@/domain/application/use-cases/errors/deliveryman-not-found-error';
+import { DeliveryManPresenter } from '../presenters/deliveryman-presenter';
 
 @Controller('/deliveryman/details')
 export class FetchDeliverymanController {
@@ -24,7 +25,7 @@ export class FetchDeliverymanController {
       const error = result.value;
 
       switch (error.constructor) {
-        case DeliveryManAlreadyExistsError:
+        case DeliverymanNotFoundError:
           throw new NotFoundException(error.message);
 
         default:
@@ -35,7 +36,7 @@ export class FetchDeliverymanController {
     const { deliveryman } = result.value;
 
     return {
-      deliveryman,
+      deliveryman: DeliveryManPresenter.toHTTP(deliveryman),
     };
   }
 }

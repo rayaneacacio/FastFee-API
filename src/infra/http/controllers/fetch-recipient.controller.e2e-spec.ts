@@ -3,44 +3,46 @@ import { DatabaseModule } from '@/infra/database/database.module';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AdminFactory } from 'test/factories/make-admin';
-import { DeliveryManFactory } from 'test/factories/make-deliveryman';
-import request from 'supertest';
 import { authenticateAdmin } from 'test/utils/auth-admin';
+import { RecipientFactory } from 'test/factories/make-recipient';
+import request from 'supertest';
 
-describe('Fetch Deliveryman (E2E)', () => {
+describe('Fetch Recipient (E2E)', () => {
   let app: INestApplication;
   let adminFactory: AdminFactory;
-  let deliveryManFactory: DeliveryManFactory;
+  let recipientFactory: RecipientFactory;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [AdminFactory, DeliveryManFactory],
+      providers: [AdminFactory, RecipientFactory],
     }).compile();
 
     app = moduleRef.createNestApplication();
 
     adminFactory = moduleRef.get(AdminFactory);
-    deliveryManFactory = moduleRef.get(DeliveryManFactory);
+    recipientFactory = moduleRef.get(RecipientFactory);
 
     await app.init();
   });
 
-  test('[GET] /deliveryman/details/:cpf', async () => {
+  test('[GET] /recipient/details/:email', async () => {
     const { token } = await authenticateAdmin(app, adminFactory);
 
-    const deliveryman = await deliveryManFactory.makePrismaDeliveryMan();
-    const { cpf } = deliveryman;
+    const recipient = await recipientFactory.makePrismaRecipient();
+    const { email } = recipient;
 
     const response = await request(app.getHttpServer())
-      .get(`/deliveryman/details/${cpf}`)
+      .get(`/recipient/details/${email}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.statusCode).toBe(200);
 
-    expect(response.body.deliveryman).toEqual(
+    expect(response.body.recipient).toEqual(
       expect.objectContaining({
-        cpf,
+        email,
+        name: expect.any(String),
+        city: expect.any(String),
       }),
     );
   });

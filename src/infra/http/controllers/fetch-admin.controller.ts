@@ -8,7 +8,8 @@ import {
 } from '@nestjs/common';
 import { Roles } from '@/infra/auth/roles.decorator';
 import { FetchAdminUseCase } from '@/domain/application/use-cases/fetch-admin';
-import { AdminAlreadyExistsError } from '@/domain/application/use-cases/errors/admin-already-exists';
+import { AdminNotFoundError } from '@/domain/application/use-cases/errors/admin-not-found-error';
+import { AdminPresenter } from '../presenters/admin-presenter';
 
 @Controller('/admin/details')
 export class FetchAdminController {
@@ -24,7 +25,7 @@ export class FetchAdminController {
       const error = result.value;
 
       switch (error.constructor) {
-        case AdminAlreadyExistsError:
+        case AdminNotFoundError:
           throw new NotFoundException(error.message);
 
         default:
@@ -35,7 +36,7 @@ export class FetchAdminController {
     const { admin } = result.value;
 
     return {
-      admin,
+      admin: AdminPresenter.toHTTP(admin),
     };
   }
 }

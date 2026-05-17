@@ -18,6 +18,14 @@ import { FetchDeliverymanController } from './controllers/fetch-deliveryman.cont
 import { FetchDeliverymanUseCase } from '@/domain/application/use-cases/fetch-deliveryman';
 import { UpdateDeliverymanController } from './controllers/update-deliveryman.controller';
 import { UpdateDeliverymanUseCase } from '@/domain/application/use-cases/update-deliveryman';
+import { RegisterRecipientController } from './controllers/register-recipient.controller';
+import { RegisterRecipientUseCase } from '@/domain/application/use-cases/register-recipient';
+import { FetchRecipientController } from './controllers/fetch-recipient.controller';
+import { FetchRecipientUseCase } from '@/domain/application/use-cases/fetch-recipient';
+import { DeleteRecipientController } from './controllers/delete-recipient.controller';
+import { DeleteRecipientUseCase } from '@/domain/application/use-cases/delete-recipient';
+import { UpdateRecipientController } from './controllers/update-recipient.controller';
+import { UpdateRecipientUseCase } from '@/domain/application/use-cases/update-recipient';
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, StorageModule],
@@ -30,6 +38,10 @@ import { UpdateDeliverymanUseCase } from '@/domain/application/use-cases/update-
     DeleteAdminController,
     DeleteDeliverymanController,
     UpdateDeliverymanController,
+    RegisterRecipientController,
+    FetchRecipientController,
+    DeleteRecipientController,
+    UpdateRecipientController,
   ],
   providers: [
     RegisterAdminUseCase,
@@ -40,6 +52,10 @@ import { UpdateDeliverymanUseCase } from '@/domain/application/use-cases/update-
     DeleteAdminUseCase,
     DeleteDeliverymanUseCase,
     UpdateDeliverymanUseCase,
+    RegisterRecipientUseCase,
+    FetchRecipientUseCase,
+    DeleteRecipientUseCase,
+    UpdateRecipientUseCase,
   ],
 })
 export class HttpModule {}

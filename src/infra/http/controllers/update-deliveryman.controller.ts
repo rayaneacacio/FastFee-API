@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   HttpCode,
+  NotFoundException,
   Param,
   Put,
 } from '@nestjs/common';
@@ -10,6 +11,7 @@ import { Roles } from '@/infra/auth/roles.decorator';
 import { UpdateDeliverymanUseCase } from '@/domain/application/use-cases/update-deliveryman';
 import { z } from 'zod';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe';
+import { DeliverymanNotFoundError } from '@/domain/application/use-cases/errors/deliveryman-not-found-error';
 
 const updateDeliverymanBodySchema = z.object({
   name: z.string().optional(),
@@ -40,7 +42,13 @@ export class UpdateDeliverymanController {
 
     if (result.isLeft()) {
       const error = result.value;
-      throw new BadRequestException(error.message);
+
+      switch (error.constructor) {
+        case DeliverymanNotFoundError:
+          throw new NotFoundException(error.message);
+        default:
+          throw new BadRequestException(error.message);
+      }
     }
   }
 }

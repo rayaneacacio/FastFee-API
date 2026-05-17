@@ -6,13 +6,12 @@ import { AdminFactory } from 'test/factories/make-admin';
 import { DeliveryManFactory } from 'test/factories/make-deliveryman';
 import request from 'supertest';
 import { authenticateAdmin } from 'test/utils/auth-admin';
-import generateCPF from 'test/utils/generate-CPF';
-import { PrismaService } from '@/infra/database/prisma/prisma.service';
+import { DeliveryManPresenter } from '../presenters/deliveryman-presenter';
 
 describe('Delete Deliveryman (E2E)', () => {
   let app: INestApplication;
-  let prisma: PrismaService;
   let adminFactory: AdminFactory;
+  let deliveryManFactory: DeliveryManFactory;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -22,8 +21,8 @@ describe('Delete Deliveryman (E2E)', () => {
 
     app = moduleRef.createNestApplication();
 
-    prisma = moduleRef.get(PrismaService);
     adminFactory = moduleRef.get(AdminFactory);
+    deliveryManFactory = moduleRef.get(DeliveryManFactory);
 
     await app.init();
   });
@@ -31,25 +30,15 @@ describe('Delete Deliveryman (E2E)', () => {
   test('[DELETE] /deliveryman/:cpf', async () => {
     const { token } = await authenticateAdmin(app, adminFactory);
 
-    const johnDoeCPF = generateCPF();
+    const deliveryman = await deliveryManFactory.makePrismaDeliveryMan();
 
     await request(app.getHttpServer())
       .post('/deliveryman')
       .set('Authorization', `Bearer ${token}`)
-      .send({
-        name: 'John Doe',
-        cpf: johnDoeCPF,
-        password: '123456',
-      });
-
-    const deliveryman = await prisma.user.findUnique({
-      where: {
-        cpf: johnDoeCPF,
-      },
-    });
+      .send(DeliveryManPresenter.toHTTP(deliveryman));
 
     const response = await request(app.getHttpServer())
-      .delete(`/deliveryman/${deliveryman?.cpf}`)
+      .delete(`/deliveryman/${deliveryman.cpf}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.statusCode).toBe(204);
