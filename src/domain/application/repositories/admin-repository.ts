@@ -4,4 +4,5 @@ export abstract class AdminRepository {
   abstract create(admin: Admin): Promise<void>;
   abstract findByCPF(cpf: string): Promise<Admin | null>;
   abstract delete(cpf: string): Promise<void>;
+  abstract changePassword(cpf: string, password: string): Promise<void>;
 }

@@ -12,9 +12,12 @@ import { z } from 'zod';
 import { WrongCredentialsError } from '@/domain/application/use-cases/errors/wrong-credentials-error';
 import { Public } from '@/infra/auth/public';
 import { AuthenticateUseCase } from '@/domain/application/use-cases/authenticate';
+import isValidCPF from '@/utils/is-valid-CPF';
 
 const authenticateBodySchema = z.object({
-  cpf: z.string(),
+  cpf: z.string().refine(isValidCPF, {
+    message: 'CPF inválido',
+  }),
   password: z.string(),
 });
 

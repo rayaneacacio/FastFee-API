@@ -30,4 +30,10 @@ export class InMemoryDeliveryManRepository implements DeliveryManRepository {
 
     if (itemIndex >= 0) this.items[itemIndex] = deliveryMan;
   }
+
+  async changePassword(cpf: string, password: string) {
+    const itemIndex = this.items.findIndex((item) => item.cpf === cpf);
+
+    if (itemIndex >= 0) this.items[itemIndex].password = password;
+  }
 }

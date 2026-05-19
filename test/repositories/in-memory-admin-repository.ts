@@ -22,4 +22,10 @@ export class InMemoryAdminRepository implements AdminRepository {
   async delete(cpf: string) {
     this.items = this.items.filter((item) => item.cpf !== cpf);
   }
+
+  async changePassword(cpf: string, password: string) {
+    const adminIndex = this.items.findIndex((item) => item.cpf === cpf);
+
+    if (adminIndex >= 0) this.items[adminIndex].password = password;
+  }
 }

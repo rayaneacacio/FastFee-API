@@ -38,4 +38,15 @@ export class PrismaAdminRepository implements AdminRepository {
       },
     });
   }
+
+  async changePassword(cpf: string, password: string): Promise<void> {
+    await this.prisma.user.update({
+      where: {
+        cpf,
+      },
+      data: {
+        password,
+      },
+    });
+  }
 }

@@ -5,6 +5,8 @@ import { AdminFactory } from 'test/factories/make-admin';
 import { hash } from 'bcryptjs';
 import { DatabaseModule } from '@/infra/database/database.module';
 import request from 'supertest';
+import generateCPF from 'test/utils/generate-CPF';
+import { faker } from '@faker-js/faker';
 
 describe('Authenticate (E2E)', () => {
   let app: INestApplication;
@@ -24,14 +26,17 @@ describe('Authenticate (E2E)', () => {
   });
 
   test('[POST] /sessions', async () => {
+    const cpf = generateCPF();
+    const password = faker.internet.password();
+
     await adminFactory.makePrismaAdmin({
-      cpf: '99999999999',
-      password: await hash('123456', 8),
+      cpf,
+      password: await hash(password, 8),
     });
 
     const response = await request(app.getHttpServer()).post('/sessions').send({
-      cpf: '99999999999',
-      password: '123456',
+      cpf,
+      password,
     });
 
     expect(response.statusCode).toBe(200);

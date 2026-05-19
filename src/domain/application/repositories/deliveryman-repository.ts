@@ -5,4 +5,5 @@ export abstract class DeliveryManRepository {
   abstract findByCPF(cpf: string): Promise<DeliveryMan | null>;
   abstract delete(cpf: string): Promise<void>;
   abstract save(deliveryMan: DeliveryMan): Promise<void>;
+  abstract changePassword(cpf: string, password: string): Promise<void>;
 }

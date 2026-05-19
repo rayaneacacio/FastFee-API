@@ -49,4 +49,15 @@ export class PrismaDeliveryManRepository implements DeliveryManRepository {
       data,
     });
   }
+
+  async changePassword(cpf: string, password: string): Promise<void> {
+    await this.prisma.user.update({
+      where: {
+        cpf,
+      },
+      data: {
+        password,
+      },
+    });
+  }
 }

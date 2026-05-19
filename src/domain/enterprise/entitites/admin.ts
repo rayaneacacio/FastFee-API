@@ -21,6 +21,10 @@ export class Admin extends Entity<AdminProps> {
     return this.props.password;
   }
 
+  set password(password: string) {
+    this.props.password = password;
+  }
+
   get role() {
     return this.props.role;
   }
